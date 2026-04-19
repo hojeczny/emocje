@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Gabor Maté — Sesje Tygodniowe</title>
+<title>Gabor Maté — Praktyki Emocjonalne</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400;1,600&family=Lora:ital,wght@0,400;0,500;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
 :root {
@@ -280,12 +280,224 @@ textarea:focus,input[type=text]:focus{border-color:var(--terracotta-light);box-s
 @media(max-width:540px){
   .emotion-grid{grid-template-columns:repeat(3,1fr);}
 }
+
+/* ════════════════════════════════
+   LOGIN OVERLAY
+════════════════════════════════ */
+#login-overlay {
+  position:fixed;inset:0;z-index:9999;
+  background:var(--deep-brown);
+  display:flex;align-items:center;justify-content:center;
+  overflow:hidden;
+}
+.lo-bg-orb { position:absolute;border-radius:50%;pointer-events:none; }
+.lo-bg-orb-1 { width:700px;height:700px;top:-200px;right:-200px;
+  background:radial-gradient(circle,rgba(196,113,74,.18) 0%,transparent 65%); }
+.lo-bg-orb-2 { width:500px;height:500px;bottom:-150px;left:-100px;
+  background:radial-gradient(circle,rgba(122,158,135,.14) 0%,transparent 65%); }
+.login-box {
+  position:relative;z-index:1;text-align:center;
+  max-width:460px;width:90%;
+  animation:loginIn .7s cubic-bezier(.22,.68,0,1.2) both;
+}
+@keyframes loginIn {
+  from{opacity:0;transform:translateY(32px) scale(.96)}
+  to{opacity:1;transform:translateY(0) scale(1)}
+}
+.login-leaf {
+  font-size:56px;display:block;margin-bottom:22px;
+  animation:sway 5s ease-in-out infinite;
+}
+@keyframes sway {
+  0%,100%{transform:rotate(-5deg)}50%{transform:rotate(5deg)}
+}
+.login-title {
+  font-family:'Playfair Display',serif;
+  font-size:clamp(36px,7vw,58px);font-weight:400;
+  color:var(--cream);line-height:1.08;margin-bottom:14px;
+}
+.login-title em{color:var(--terracotta-light);font-style:italic;}
+.login-sub {
+  font-family:'Lora',serif;font-size:15px;
+  color:rgba(247,242,234,.52);line-height:1.75;
+  margin-bottom:36px;max-width:380px;margin-left:auto;margin-right:auto;
+}
+.config-banner-inner {
+  background:rgba(212,162,76,.1);border:1px solid rgba(212,162,76,.28);
+  border-radius:14px;padding:16px 20px;margin-bottom:22px;text-align:left;
+}
+.config-title {font-size:13px;font-weight:600;color:var(--amber-light);margin-bottom:6px;}
+.config-body {font-family:'Lora',serif;font-size:13px;color:rgba(247,242,234,.65);line-height:1.6;}
+.config-body code {background:rgba(247,242,234,.1);padding:2px 7px;border-radius:5px;font-size:11px;font-family:monospace;}
+.config-body strong {color:var(--amber-light);}
+.google-sign-btn {
+  display:inline-flex;align-items:center;gap:12px;
+  background:white;color:#3c4043;
+  font-family:'DM Sans',sans-serif;font-size:15px;font-weight:500;
+  padding:13px 28px;border-radius:50px;border:none;
+  cursor:pointer;box-shadow:0 4px 24px rgba(0,0,0,.25);
+  transition:all .22s ease;margin-bottom:24px;
+  letter-spacing:.2px;
+}
+.google-sign-btn:hover {
+  box-shadow:0 8px 40px rgba(0,0,0,.35);
+  transform:translateY(-2px);
+}
+.google-sign-btn:active{transform:translateY(0);}
+.google-sign-btn.loading {
+  pointer-events:none;opacity:.7;
+}
+.login-note {
+  font-size:12px;color:rgba(247,242,234,.28);
+  font-family:'Lora',serif;font-style:italic;line-height:1.65;
+}
+/* ── USER CHIP ── */
+#user-chip {
+  display:none;align-items:center;gap:10px;
+  position:absolute;top:22px;right:52px;z-index:10;
+}
+#user-chip.visible{display:flex;}
+#user-avatar {
+  width:38px;height:38px;border-radius:50%;
+  border:2px solid rgba(247,242,234,.22);object-fit:cover;
+}
+#user-avatar-fallback {
+  width:38px;height:38px;border-radius:50%;
+  background:var(--terracotta);border:2px solid rgba(247,242,234,.22);
+  display:none;align-items:center;justify-content:center;
+  font-size:15px;font-weight:700;color:white;
+  font-family:'DM Sans',sans-serif;
+}
+#user-avatar-fallback.visible{display:flex;}
+#user-name-chip {
+  font-size:13px;font-weight:500;color:rgba(247,242,234,.78);
+  max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+#logout-btn {
+  background:rgba(247,242,234,.07);
+  border:1px solid rgba(247,242,234,.13);
+  color:rgba(247,242,234,.45);font-size:11px;
+  padding:5px 12px;border-radius:20px;cursor:pointer;
+  font-family:'DM Sans',sans-serif;transition:all .2s;letter-spacing:.5px;
+}
+#logout-btn:hover{background:rgba(247,242,234,.14);color:rgba(247,242,234,.8);}
+
 </style>
+
+<!-- Firebase SDK (modular) -->
+<script type="module">
+// ╔══════════════════════════════════════════════════════════════╗
+// ║  FIREBASE CONFIG — wstaw swoje dane z Firebase Console       ║
+// ║  Instrukcja: patrz poniżej w kodzie lub w README             ║
+// ╚══════════════════════════════════════════════════════════════╝
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged }
+  from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+import { getFirestore, doc, collection, setDoc, getDoc, getDocs, addDoc, query, orderBy, limit, serverTimestamp }
+  from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+
+// ─── WSTAW TUTAJ swój firebaseConfig (skopiuj z Firebase Console) ───
+const firebaseConfig = {
+  apiKey:            "TWOJ_API_KEY",
+  authDomain:        "TWOJ_PROJECT.firebaseapp.com",
+  projectId:         "TWOJ_PROJECT_ID",
+  storageBucket:     "TWOJ_PROJECT.appspot.com",
+  messagingSenderId: "TWOJ_SENDER_ID",
+  appId:             "TWOJ_APP_ID"
+};
+// ────────────────────────────────────────────────────────────────
+
+const IS_CONFIGURED = firebaseConfig.apiKey !== "TWOJ_API_KEY";
+
+const app  = IS_CONFIGURED ? initializeApp(firebaseConfig) : null;
+const auth = IS_CONFIGURED ? getAuth(app) : null;
+const db   = IS_CONFIGURED ? getFirestore(app) : null;
+
+// ── expose to global scope so non-module functions can call them ──
+window._fb = { auth, db, GoogleAuthProvider, signInWithPopup, signOut,
+               onAuthStateChanged, doc, collection, setDoc, getDoc,
+               getDocs, addDoc, query, orderBy, limit, serverTimestamp,
+               IS_CONFIGURED };
+
+// ── Auth state listener ──
+if (IS_CONFIGURED && auth) {
+  onAuthStateChanged(auth, user => {
+    if (user) {
+      window._fbUser = {
+        id:      user.uid,
+        name:    user.displayName || user.email,
+        email:   user.email,
+        picture: user.photoURL,
+      };
+      if (typeof onUserLoaded === 'function') onUserLoaded();
+    } else {
+      window._fbUser = null;
+      showLoginOverlay();
+    }
+  });
+} else {
+  // Not configured yet — show config banner
+  document.addEventListener('DOMContentLoaded', () => {
+    showLoginOverlay();
+    const banner = document.getElementById('config-banner');
+    if (banner) banner.style.display = 'block';
+  });
+}
+</script>
+
 </head>
 <body>
 
+<!-- ══════════════════════════════════════════
+     LOGIN OVERLAY
+══════════════════════════════════════════ -->
+<div id="login-overlay" style="display:none;">
+  <div class="lo-bg-orb lo-bg-orb-1"></div>
+  <div class="lo-bg-orb lo-bg-orb-2"></div>
+  <div class="login-box">
+    <div class="login-leaf">🌿</div>
+    <h1 class="login-title">Praktyki<br><em>Emocjonalne</em></h1>
+    <p class="login-sub">Twój osobisty dziennik pracy z emocjami według metody Gabora Maté. Każde konto przechowuje twoje dane w chmurze — dostępne z każdego urządzenia.</p>
+
+    <div id="config-banner" style="display:none;">
+      <div class="config-banner-inner">
+        <div class="config-title">⚙️ Wymagana konfiguracja Firebase</div>
+        <div class="config-body">Otwórz plik HTML w edytorze i wstaw swój <code>firebaseConfig</code>.<br>
+        Instrukcja krok po kroku: <strong>patrz sekcja poniżej</strong> lub w komentarzach kodu.</div>
+      </div>
+    </div>
+
+    <button class="google-sign-btn" onclick="doGoogleSignIn()" id="google-sign-btn">
+      <svg width="20" height="20" viewBox="0 0 48 48">
+        <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
+        <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
+        <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
+        <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.35-8.16 2.35-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
+        <path fill="none" d="M0 0h48v48H0z"/>
+      </svg>
+      Zaloguj się przez Google
+    </button>
+
+    <p class="login-note">🔒 Twoje dane są szyfrowane i przechowywane na serwerach Google Firebase.<br>Używamy tylko twojego imienia i adresu email do identyfikacji konta.</p>
+  </div>
+</div>
+
+
 <!-- ══ HEADER ══ -->
 <header>
+
+  <!-- USER CHIP (pokazuje się po zalogowaniu) -->
+  <div id="user-chip">
+    <img id="user-avatar" src="" alt="" style="display:none;">
+    <div id="user-avatar-fallback"></div>
+    <span id="user-name-chip"></span>
+    <button id="logout-btn" onclick="doLogout()">Wyloguj</button>
+  </div>
+
+    <span id="user-name-chip"></span>
+    <button id="logout-btn" onclick="doLogout()">Wyloguj</button>
+  </div>
+
   <div class="h-eyebrow">Gabor Maté · Praktyki Tygodniowe</div>
   <h1>Twoja Sesja<br><em>Głębokiej Pracy</em></h1>
   <p class="h-sub">Ustrukturyzowany rytuał raz w tygodniu — check-in, praca somatyczna, journaling i mapa wzorców. Wszystko w jednym miejscu, w swoim tempie.</p>
@@ -928,12 +1140,135 @@ let breathTimer = null, breathPhaseIdx = 0;
 let quoteIdx = 0;
 
 // ═══════════════════════════════════════════════════
-// STORAGE HELPERS
+// AUTH & FIREBASE STORAGE
+// ═══════════════════════════════════════════════════
+let currentUser = null; // set by onUserLoaded()
+
+function showLoginOverlay() {
+  const ol = document.getElementById('login-overlay');
+  if (ol) ol.style.display = 'flex';
+}
+
+function hideLoginOverlay() {
+  const ol = document.getElementById('login-overlay');
+  if (!ol) return;
+  ol.style.transition = 'opacity .5s ease';
+  ol.style.opacity = '0';
+  setTimeout(() => { ol.style.display = 'none'; ol.style.opacity = '1'; }, 520);
+}
+
+async function doGoogleSignIn() {
+  const fb = window._fb;
+  if (!fb || !fb.IS_CONFIGURED) {
+    alert('Uzupełnij firebaseConfig w kodzie HTML. Patrz instrukcja.');
+    return;
+  }
+  const btn = document.getElementById('google-sign-btn');
+  if (btn) { btn.classList.add('loading'); btn.textContent = 'Logowanie...'; }
+  try {
+    const provider = new fb.GoogleAuthProvider();
+    await fb.signInWithPopup(fb.auth, provider);
+    // onAuthStateChanged fires automatically → onUserLoaded()
+  } catch (err) {
+    console.error('Sign-in error:', err);
+    if (btn) { btn.classList.remove('loading'); btn.innerHTML = '<svg width="20" height="20" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.35-8.16 2.35-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg> Zaloguj się przez Google'; }
+    toast('Błąd logowania. Sprawdź konfigurację Firebase.');
+  }
+}
+
+function onUserLoaded() {
+  currentUser = window._fbUser;
+  if (!currentUser) return;
+  hideLoginOverlay();
+  // User chip
+  const chip = document.getElementById('user-chip');
+  if (chip) chip.classList.add('visible');
+  const nameParts = (currentUser.name || 'U').split(' ');
+  const initials = nameParts.map(p => p[0]).join('').slice(0,2).toUpperCase();
+  const nameEl = document.getElementById('user-name-chip');
+  if (nameEl) nameEl.textContent = nameParts[0];
+  const fallback = document.getElementById('user-avatar-fallback');
+  if (fallback) { fallback.textContent = initials; fallback.classList.add('visible'); }
+  if (currentUser.picture) {
+    const img = document.getElementById('user-avatar');
+    if (img) {
+      img.src = currentUser.picture;
+      img.style.display = 'block';
+      img.onload = () => { if (fallback) fallback.classList.remove('visible'); };
+    }
+  }
+  init();
+}
+
+async function doLogout() {
+  if (!confirm('Wylogować się?')) return;
+  const fb = window._fb;
+  if (fb && fb.IS_CONFIGURED && fb.auth) {
+    await fb.signOut(fb.auth);
+  }
+  currentUser = null;
+  window._fbUser = null;
+  window.location.reload();
+}
+
+// ═══════════════════════════════════════════════════
+// STORAGE HELPERS — Firestore (cloud) + localStorage fallback
 // ═══════════════════════════════════════════════════
 const S = {
-  get: k => { try { return JSON.parse(localStorage.getItem('gm_'+k)) || null; } catch { return null; } },
-  set: (k,v) => localStorage.setItem('gm_'+k, JSON.stringify(v)),
-  arr: k => S.get(k) || [],
+  _col: () => {
+    const fb = window._fb;
+    if (!fb || !fb.IS_CONFIGURED || !currentUser) return null;
+    return fb.collection(fb.db, 'users', currentUser.id, 'data');
+  },
+
+  // Sync save: write to Firestore; also mirror to localStorage for speed
+  set: async (k, v) => {
+    // localStorage mirror (instant read)
+    try { localStorage.setItem('gm_' + (currentUser?.id||'anon') + '_' + k, JSON.stringify(v)); } catch {}
+    // Firestore write
+    const col = S._col();
+    const fb = window._fb;
+    if (!col || !fb) return;
+    try {
+      await fb.setDoc(fb.doc(fb.db, 'users', currentUser.id, 'data', k), { value: v, updated: fb.serverTimestamp() });
+    } catch(e) { console.warn('Firestore write error:', e); }
+  },
+
+  // Read: try localStorage first (fast), then Firestore
+  get: async (k) => {
+    // Try localStorage mirror first
+    try {
+      const local = localStorage.getItem('gm_' + (currentUser?.id||'anon') + '_' + k);
+      if (local) return JSON.parse(local);
+    } catch {}
+    // Firestore fallback
+    const fb = window._fb;
+    if (!fb || !fb.IS_CONFIGURED || !currentUser) return null;
+    try {
+      const snap = await fb.getDoc(fb.doc(fb.db, 'users', currentUser.id, 'data', k));
+      if (snap.exists()) {
+        const v = snap.data().value;
+        // warm localStorage cache
+        try { localStorage.setItem('gm_' + currentUser.id + '_' + k, JSON.stringify(v)); } catch {}
+        return v;
+      }
+    } catch(e) { console.warn('Firestore read error:', e); }
+    return null;
+  },
+
+  // Sync array getter — reads from localStorage cache for UI rendering speed
+  arr: (k) => {
+    try {
+      const local = localStorage.getItem('gm_' + (currentUser?.id||'anon') + '_' + k);
+      return local ? JSON.parse(local) : [];
+    } catch { return []; }
+  },
+
+  // Async array getter with Firestore sync
+  arrAsync: async (k) => {
+    const v = await S.get(k);
+    return v || [];
+  },
 };
 
 // ═══════════════════════════════════════════════════
@@ -1007,7 +1342,7 @@ function selInt(n) {
 // ═══════════════════════════════════════════════════
 // CHECK-IN
 // ═══════════════════════════════════════════════════
-function saveCheckin() {
+async function saveCheckin() {
   if (selectedEm === null) { toast('Najpierw wybierz emocję 👆'); return; }
   const note = document.getElementById('checkin-note').value.trim();
   const entry = {
@@ -1017,7 +1352,7 @@ function saveCheckin() {
   const hist = S.arr('checkin');
   hist.unshift(entry);
   if (hist.length > 30) hist.pop();
-  S.set('checkin', hist);
+  await S.set('checkin', hist);
   renderCheckinHistory();
   toast('✅ Check-in zapisany!');
 }
@@ -1158,7 +1493,7 @@ function savePhase1() {
   markPhase(1);
 }
 
-function finishSession() {
+async function finishSession() {
   if (sessionTick) clearInterval(sessionTick);
   document.getElementById('stb').classList.remove('visible');
   const discovery = document.getElementById('phase5-discovery')?.value || '';
@@ -1166,7 +1501,7 @@ function finishSession() {
   // Save session
   const sessions = S.arr('sessions');
   sessions.unshift({ts:Date.now(),discovery,word,phases:Object.keys(phasesDone).length});
-  S.set('sessions',sessions);
+  await S.set('sessions',sessions);
   // Show complete
   document.getElementById('session-complete').style.display='block';
   document.getElementById('complete-discovery').textContent = discovery || 'Sesja tygodniowa ukończona.';
@@ -1414,9 +1749,9 @@ function nextQuote(){
 }
 
 // ═══════════════════════════════════════════════════
-// START
+// START — Firebase onAuthStateChanged handles login detection
+// init() is called by onUserLoaded() after successful auth
 // ═══════════════════════════════════════════════════
-init();
 </script>
 </body>
 </html>
